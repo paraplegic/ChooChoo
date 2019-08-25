@@ -1,0 +1,7 @@
+fastapi[all]
+uvicorn
+email-validator
+dateutils
+## python-smbus
+## adafruit-circuitpython-servokit
+PCA9685-driver
