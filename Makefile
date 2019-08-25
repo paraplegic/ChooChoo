@@ -35,3 +35,6 @@ realclean:
 depends:
 	sudo apt-get install build-essential libi2c-dev i2c-tools python-dev libffi-dev
 	curl -fsSL get.docker.com -o get-docker.sh && sh get-docker.sh
+
+test:	update
+	cd $(WRK_DIR); . bin/activate ; python3 Servo.py
