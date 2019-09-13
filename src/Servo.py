@@ -1,47 +1,132 @@
-# Simple demo of of the PCA9685 PWM servo/LED controller library.
-# This will move channel 0 from min to max position repeatedly.
-# Author: Tony DiCola
-# License: Public Domain
-from __future__ import division
 import time
-
-# Import the PCA9685 module.
 import Adafruit_PCA9685
 
+##
+## a class to control the PCA_9685 PWM servo controller
+## 
+class PCA_9685():
 
-# Uncomment to enable debug output.
-#import logging
-#logging.basicConfig(level=logging.DEBUG)
+	max_pulse = 600
+	min_pulse = 150
+	mid_pulse = int( min_pulse + (max_pulse - min_pulse) / 2 )
 
-# Initialise the PCA9685 using the default address (0x40).
-pwm = Adafruit_PCA9685.PCA9685()
+	pwm_freq = 60
+	pwm_controller = None
+	servo_state = []
 
-# Alternatively specify a different address and/or bus:
-#pwm = Adafruit_PCA9685.PCA9685(address=0x41, busnum=2)
+	## initialize a controller on a bus ...
+	def __init__( self, bus, addr ):
+		self.bus = bus
+		self.address = addr
+		self.pwm_controller = Adafruit_PCA9685.PCA9685( address = addr, busnum = bus )
+		self.pwm_controller.set_pwm_freq( self.pwm_freq )
+		for servo in range( 16 ):
+			new = {
+				'n': servo, 
+				'n_states': 2, 
+				'state': 0, 
+				'pulse': [ self.min_pulse, self.max_pulse ],
+			}
+			self.servo_state.append( new )
+			self.set_neutral( servo )
 
-# Configure min and max servo pulse lengths
-servo_min = 150  # Min pulse length out of 4096
-servo_max = 600  # Max pulse length out of 4096
+	## clear the state value of servo N ...
+	def clr_state( self, n ):
+		self.servo_state[n]['state'] = 0
 
-# Helper function to make setting a servo pulse width simpler.
-def set_servo_pulse(channel, pulse):
-    pulse_length = 1000000    # 1,000,000 us per second
-    pulse_length //= 60       # 60 Hz
-    print('{0}us per period'.format(pulse_length))
-    pulse_length //= 4096     # 12 bits of resolution
-    print('{0}us per bit'.format(pulse_length))
-    pulse *= 1000
-    pulse //= pulse_length
-    pwm.set_pwm(channel, 0, pulse)
+	## set the servo to the MIDDLE of its travel ...
+	def set_neutral( self, n ):
+		self.set_raw( n, self.mid_pulse )
 
-# Set frequency to 60hz, good for servos.
-pwm.set_pwm_freq(60)
+	## toggle state and move the servo ...
+	def set_toggle( self, n ):
+		self.servo_state[n]['state'] = 1 - self.get_state( n )
+		self.set_position( n )
 
-print('Moving servo on channel 0, press Ctrl-C to quit...')
-while True:
-    # Move servo on channel O between extremes.
-    for pulse in [ servo_min, int( servo_max/3 ), int( servo_max/2 ), servo_max ]:
-      time.sleep( .3 )
-      for channel in [ 0, 4, 8 ]:
-         pwm.set_pwm(channel, 0, pulse)
-         pwm.set_pwm(channel, 0, pulse)
+	## get the state ... 
+	def get_state( self, n ):
+		return self.servo_state[n]['state']
+
+	## set the state ... 
+	def set_state( self, n, state ):
+		d = self.servo_state[n]
+		if state < d['n_states']:
+			self.servo_state[n]['state'] = state
+		else:
+			print( 'cannot set state %d: %d' %(n,state))
+
+	## get the current state pulse value ...
+	def get_pulse( self, n ):
+		d = self.servo_state[n]
+		s = d['state']
+		p = d['pulse']
+		return p 
+
+	## set the position of the servo to the current state ...
+	def set_position( self, n ):
+		d = self.servo_state[n]
+		unit = n
+		state = d['state']
+		pulse = d['pulse'][state]
+		self.set_raw( n, pulse )
+
+	## set the pulse value to the register ...
+	def set_raw( self, servo, pulse ):
+		self.pwm_controller.set_pwm( servo, 0, pulse )
+
+	## set a tag on a register number ...
+	def set_tag( self, servo, tag ):
+		d = self.servo_state[servo]
+		d['tag'] = tag 
+
+	## toggle the tagged unit ...
+	def toggle_tag( self, tag ):
+		ix = 0
+		for d in self.servo_state:
+			if d['tag'] == tag:
+				self.set_toggle( ix )
+			ix += 1
+
+	## set all servos to state [0:1] ...
+	def set_all( self, state ):
+		for i in range( len( self.servo_state ) ):
+			self.set_state( i, state )
+
+	## set all servos to neutral ... 
+	def set_configure( self ):
+		for i in range( len( self.servo_state ) ):
+			self.set_neutral( i )
+				
+
+if __name__ == '__main__':
+
+	tags = [ 
+		'zero', 'One', 'Two', 'Three', 
+		'Four', 'Five', 'Six', 'Seven', 
+		'Eight', 'Nine', 'Ten', 'Eleven', 
+		'Twelve', 'Thirteen', 'Fourteen', 'Fifteen',
+	]
+
+	c = PCA_9685( 1, 0x40 )
+	ix = 0
+	for t in tags:
+		c.set_tag( ix, t )
+		ix += 1
+
+	for s in c.servo_state:
+		print( s )
+
+	c.set_configure()
+	time.sleep( 5 )
+
+	c.toggle_tag( 'Four' ) 
+	time.sleep( 5 )
+
+	state = 0
+	while True:
+		for s in [ 0, 4, 8 ]:
+			c.set_toggle( s )
+
+		state = 1 - state
+		time.sleep( 1.5 ) 
+
