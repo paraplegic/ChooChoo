@@ -196,5 +196,5 @@ if __name__ == '__main__':
 	for t in db.tables():
 		print(t)
 		for v in db.variables( t, qualified = False ):
-			print( "  %s" % v )
-
+			print( "  %s" % v )	
+	db.close()	
