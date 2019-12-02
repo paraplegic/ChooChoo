@@ -38,3 +38,6 @@ depends:
 
 test:	update
 	cd $(WRK_DIR); . bin/activate ; python3 Servo.py
+
+unit:
+	cd $(WRK_DIR); . bin/activate ; pytest

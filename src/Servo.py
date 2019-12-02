@@ -20,6 +20,7 @@ class PCA_9685():
 		self.address = addr
 		self.pwm_controller = Adafruit_PCA9685.PCA9685( address = addr, busnum = bus )
 		self.pwm_controller.set_pwm_freq( self.pwm_freq )
+
 		for servo in range( 16 ):
 			new = {
 				'n': servo, 
