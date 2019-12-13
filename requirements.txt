@@ -4,3 +4,4 @@ email-validator
 dateutils
 adafruit-pca9685
 pytest
+jinja2

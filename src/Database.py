@@ -69,7 +69,7 @@ class Database():
 		return self.provider.database()
 
 	def close(self):
-		self.cx.close()
+		self.provider.cx.close()
 		
 	def cursor(self):
 		return self.provider.cx.cursor()
@@ -163,6 +163,8 @@ class Database():
 
 if __name__ == '__main__':
 
+	from Html import Html
+
 	provider = sqlite( dbms='mydb.sq3')
 	db = Database(provider)
 	
@@ -192,9 +194,13 @@ if __name__ == '__main__':
 	for d in c.execute( 'select * from xyzzy;'):
 		print(d)
 
+	tbl = Html().entabulate( dl )
+	print( tbl )
+
 	print( "Tables:" )
 	for t in db.tables():
 		print(t)
 		for v in db.variables( t, qualified = False ):
 			print( "  %s" % v )	
+
 	db.close()	

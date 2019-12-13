@@ -24,6 +24,8 @@ $(WRK_DIR):
 
 update: $(WRK_DIR)
 	cd $(WRK_DIR) ; cp -r $(SRC_DIR)/* . 
+	cd $(WRK_DIR) ; cp -r ../static .
+	cd $(WRK_DIR) ; cp -r ../templates .
 
 launch:	update
 	docker run -d -p 0.0.0.0:8001:8001 --priviledged $(DOCKER_IMAGE)
@@ -36,8 +38,11 @@ depends:
 	sudo apt-get install build-essential libi2c-dev i2c-tools python-dev libffi-dev
 	curl -fsSL get.docker.com -o get-docker.sh && sh get-docker.sh
 
-test:	update
+servo_test:	update
 	cd $(WRK_DIR); . bin/activate ; python3 Servo.py
 
-unit:
-	cd $(WRK_DIR); . bin/activate ; pytest
+db_test:	update
+	cd $(WRK_DIR); . bin/activate ; python3 Database.py
+
+service: update
+	cd $(WRK_DIR); . bin/activate ; uvicorn Service:api --reload --host 0.0.0.0 --port 8001

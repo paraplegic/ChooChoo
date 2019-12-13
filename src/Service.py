@@ -5,30 +5,48 @@ from dateutil.parser import parse
 from dateutil.tz import UTC
 
 from fastapi import FastAPI
-from fastapi import HTTPException
 from fastapi import Depends
-## from fastapi.security import OAuth2PasswordBearer
+from starlette.staticfiles import StaticFiles
+from starlette.templating import Jinja2Templates
+from starlette.requests import Request
 
-log = Log( 'ChooChoo' )
-api = FastAPI()
+VERSION=0.9
 
-timr = None
-agg = None
-query = None
+api = FastAPI('Turnout', template_folder='../static')
+templates = Jinja2Templates(directory="../templates")
 
-def initialize():
+def initialize( app ):
+	app.mount( "/static", StaticFiles(directory="../static"), name="static")
+
+@api.get( '/')
+def healthTest():
+	return { 'turnout': 'running', 'version': VERSION } 
+
+@api.get( '/index')
+def index( request: Request ):
+	return templates.TemplateResponse( 'base.html', { 'request': request, 'app': 'Turnout', 'version': VERSION } )
+
+@api.post( '/register')
+def register():
 	pass
 
-@api.get( '/turnouts/v0/create/{tag}')
-def create( tag: str ):
+@api.post( '/login')
+def login():
 	pass
 
+@api.get( '/servo')
+def servo():
+	pass
 
-@api.get( '/turnouts/v0/delete/{tag}') 
-def delete( tag: str ):
+@api.get( '/turnout') 
+def turnout():
+	pass
+
+@api.get( '/siding') 
+def siding():
 	pass
 
 if __name__ == '__main__':
 
-	log = Log( sys.argv[0] )
-	api.run( host = '0.0.0.0', port = 8888, debug = False )
+	templates = initialize( api )
+	api.run( host = '0.0.0.0', port = 8888, debug = True )

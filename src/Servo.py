@@ -77,8 +77,13 @@ class PCA_9685():
 
 	## set a tag on a register number ...
 	def set_tag( self, servo, tag ):
-		d = self.servo_state[servo]
-		d['tag'] = tag 
+		try:
+			d = self.servo_state[servo]
+			d['tag'] = tag 
+			return
+		except Exception as e:
+			print( 'unable to set tag: %s' % e )
+
 
 	## toggle the tagged unit ...
 	def toggle_tag( self, tag ):

@@ -13,7 +13,6 @@ class i2cBus():
 		for device in range( 128 ):
 			try:
 				ch = self.bus.read_byte( device )
-				print( device, hex( ch ) )
 				rv.append( hex( device ) )
 			except Exception as e:
 				pass
