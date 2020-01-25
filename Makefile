@@ -14,11 +14,13 @@ REQ=requirements.txt
 ##
 ## artifacts ... 
 
-all:	$(WRK_DIR) update
+all:	requirements update
 
 $(WRK_DIR):
 	python3 -m venv $(WRK_DIR)
 	cp $(REQ) $(WRK_DIR)
+
+requirements:	$(WRK_DIR)
 	cd $(WRK_DIR); . bin/activate ; pip install --upgrade pip
 	cd $(WRK_DIR); . bin/activate ; pip install -r $(REQ)
 
@@ -44,5 +46,5 @@ servo_test:	update
 db_test:	update
 	cd $(WRK_DIR); . bin/activate ; python3 Database.py
 
-service: update
+run: update
 	cd $(WRK_DIR); . bin/activate ; uvicorn Service:api --reload --host 0.0.0.0 --port 8001

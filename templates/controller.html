@@ -1,0 +1,25 @@
+{% extends "bootstrap.html" %}
+{% block content %}
+
+	<h2>Controllers</h2>
+
+		<div class="container-fluid">
+			<form action = "/servos" METHOD="post" id='bus' >
+				<div class='formgroup'>
+					<label>Select a Controller</label><br>
+						<select name="controller" id="controller" form="bus">
+							{% for controller in i2cList %}
+	  							<option value={{controller}}>{{controller}}</option>
+							{% endfor %}
+						</select>
+				</div>
+				<div class='formgroup'><br>
+					<input type=submit text="Submit"></button>
+				</div>
+			</form>
+		</div>
+
+{% endblock content %}
+
+{% block servos %} 
+{% endblock servos %}

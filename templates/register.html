@@ -1,0 +1,31 @@
+{% extends "bootstrap.html" %}
+{% block content %}
+
+	<h2>Registration</h2>
+		<form action={{ url_for( 'auth' ) }} METHOD="post" enctype="multipart-form-data">
+			<div class='formgroup'>
+				<label >Screen Name</label><br>
+				<input type='text' width=20 id='username' name='username' ><br>
+			</div>
+			<div class='formgroup'>
+				<label >Email Address</label><br>
+				<input type='email' width=20 id='email' name='email' ><br>
+			</div>
+			<div class='formgroup'>
+				<label >Confirm Email</label><br>
+				<input type='email' width=20 id='confirm' name='confirm' ><br>
+			</div>
+			<div class='formgroup'>
+				<label >Password</label><br>
+				<input type='password' width=20 id='password' name='password' ><br>
+			</div>
+			<div class='formgroup'>
+				<label '>Confirm Password</label><br>
+				<input type='password' width=20 id='password2' name='password2' ><br>
+			</div>
+			<div class='formgroup'>
+				<input type=submit class="btn btn-default" text="Submit" ></button><br>
+			</div>
+		</form>
+
+{% endblock content %}

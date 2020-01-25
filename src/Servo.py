@@ -15,7 +15,7 @@ class PCA_9685():
 	servo_state = []
 
 	## initialize a controller on a bus ...
-	def __init__( self, bus, addr ):
+	def __init__( self, bus, addr=None ):
 		self.bus = bus
 		self.address = addr
 		self.pwm_controller = Adafruit_PCA9685.PCA9685( address = addr, busnum = bus )

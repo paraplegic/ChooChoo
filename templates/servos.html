@@ -1,0 +1,17 @@
+{% extends "controller.html" %}
+{% block content %}
+
+	<h2>Servos</h2>
+		<h3>{{ controller }}</h2>
+		<div class="container-fluid">
+			{% for cluster in range(4) %}
+				<ul>
+				{% for servo in range(4) %}
+					<li>links for servo: {% print(servo+4*cluster) %}</li>
+				{% endfor %}
+				</ul>
+				<br>
+			{% endfor %}
+		</div>
+
+{% endblock content %}

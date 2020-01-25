@@ -1,12 +1,13 @@
 import sqlite3
 
-class sqlite():
+class Sqlite():
 	'''
 	The service provider for an SQLite3 file based database
 	'''
 
 	db_type = None
 	dbms = None
+	cx = None
 
 	def __init__(self, dbms=None):
 		try:
@@ -14,7 +15,7 @@ class sqlite():
 			if not dbms:
 				dbms = ':memory:'
 			self.dbms = dbms
-			self.cx = sqlite3.connect(dbms)
+			self.cx = sqlite3.connect(dbms, check_same_thread=False)
 			self.cx.row_factory = self.dictFactory
 
 		except Exception as e:
@@ -106,6 +107,7 @@ class Database():
 		return q
 
 	def insertFromDict(self, table, dct ):
+
 		n = len(dct.keys())
 		q = 'INSERT INTO %s (' % table 
 		q += ','.join( dct.keys() )
@@ -121,8 +123,13 @@ class Database():
 		try:
 			tlst = self.dlistToTuples( dlst )
 			c.executemany(q,tlst)
+			self.commit()
+			return True
+
 		except Exception as e:
-			print( ":::: insertion error:", e, q, tlst )
+			raise DatabaseError( "Error: %s" % e )
+
+		return False
 
 	def dlistToTuples(self, dlst ):
 		rv = []
@@ -165,7 +172,7 @@ if __name__ == '__main__':
 
 	from Html import Html
 
-	provider = sqlite( dbms='mydb.sq3')
+	provider = Sqlite( dbms='mydb.sq3')
 	db = Database(provider)
 	
 	dl = [
