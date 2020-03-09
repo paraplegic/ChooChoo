@@ -6,7 +6,7 @@ class Table():
 	def entabulate(self, dlist):
 		rv = [
 			'<div class="table-responsive">',
-			'<table class="table table-striped">',
+			'<table class="table table-striped clickable">',
 		]
 		keys = dlist[0].keys()
 
@@ -14,14 +14,16 @@ class Table():
 		for k in keys:
 			rv.append('<td>%s</td>'%k.capitalize())
 		rv.append('</thead>')
+		ix = 0
 		for d in dlist:
-			rv.append('<tr>')
+			rv.append('<tr data-href="/user/%s">' % d['email'])
 			for k in keys:
 				if k in 'password':
 					rv.append('<td>%s</td>'%'*****')
 				else:
 					rv.append('<td>%s</td>'%d[k])
 			rv.append('</tr>')
+			ix += 1
 
 		rv.append('</table>')
 		rv.append('</div>')

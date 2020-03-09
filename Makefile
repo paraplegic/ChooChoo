@@ -48,3 +48,6 @@ db_test:	update
 
 run: update
 	cd $(WRK_DIR); . bin/activate ; uvicorn Service:api --reload --host 0.0.0.0 --port 8001
+
+backup:	realclean
+	tar -zcv --exclude=".git/*" -f ../ChooChoo.tgz ./

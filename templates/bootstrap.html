@@ -50,5 +50,47 @@
 	{% block footer %}Footer{% endblock footer %}
 	</div>
 
+<style>
+	.clickable {
+		cursor: pointer;
+	}
+</style>
+<script>
+$(document).ready(function(){
+	$('form.crud').on('submit', function(){
+		var	form = $(this),
+				url = form.attr('action'),
+				method = form.attr('method'),
+				data = {};
+
+		form.find('[name]').each( function( index, value ) {
+			var	field = $(this),
+					name = field.attr('name'),
+					val = field.val();
+		
+			console.log(name+value);
+			data[name] = val;
+		});
+
+//		$.ajax({
+// 			url: url,
+// 			method: method,
+// 			data: data,
+// 			success: function(reply){
+// 				console.log(data);
+// 			}
+// 		});
+		console.log(data);
+	});
+});
+
+$(document).ready(function(){
+	$(document.body).on('click', 'tr[data-href]', function(){
+		console.log( this.dataset.href );
+		window.location.href = this.dataset.href;
+	});
+});
+</script>
+
 </body>
 </html>

@@ -5,11 +5,15 @@
 		<h3>{{ controller }}</h2>
 		<div class="container-fluid">
 			{% for cluster in range(4) %}
-				<ul>
 				{% for servo in range(4) %}
-					<li>links for servo: {% print(servo+4*cluster) %}</li>
+					<form class='crud' action='/servo/toggle' method='POST'>
+						<input type="hidden" name="controller" id="controller" value={{controller}}>
+						<input type="hidden" name="unit" id="unit" value={{servo+4*cluster}}>
+						<p>links for servo: {% print(servo+4*cluster) %} enabled={{enabled}}</p>
+						<input type="checkbox" name="enabled" id="enabled" value={{enabled}}>
+						<input type="submit" value='Toggle'>
+					</form>
 				{% endfor %}
-				</ul>
 				<br>
 			{% endfor %}
 		</div>

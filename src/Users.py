@@ -69,6 +69,16 @@ class Users:
 
 		return None
 
+	def user(self, usr ):
+		q = "select * from %s where user = '%s';" % (self.table,usr)
+		cur = self.db.query(q)
+		if cur:
+			return cur.fetchone()
+
+		return None
+
+
+
 	def login(self,info):
 		account = self.lookup(info)
 		if not account:

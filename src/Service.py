@@ -154,7 +154,7 @@ def get_users(request: Request):
 	return templates.TemplateResponse('administer.html',context)
 
 @api.get( '/controller')
-def servo(request: Request):
+def controller(request: Request):
 	global bus
 	context = {
 		'request': request,
@@ -193,12 +193,43 @@ async def servos(request: Request):
 	context['controller'] = addr
 	
 	if not addr in servo_cache: 
+		print(":::: adding %s to cache." % addr)
 		servo_cache[addr] = PCA_9685(1, int(addr,0))
 
 	state = servo_cache[addr].servo_state
 	context['servos'] = state
 	print( state )
 	return templates.TemplateResponse('servos.html',context)
+
+@api.post( '/servo/toggle')
+async def servo( request: Request):
+	global servo_cache
+	context = {
+		'request': request,
+		'app': 'Turnout',
+		'version': VERSION,
+		'i2cBus': None,
+		'controller': None,
+		'enabled': False
+	}
+
+	rqst = await request.body()
+	r = urltodict( rqst )
+	print( rqst, r )
+
+	enabled = False
+	if 'enabled' in r:
+		enabled = r['enabled']
+
+	if r['controller'] in servo_cache:
+		controller = servo_cache[r['controller']]
+		unit = int( r['unit'] )
+		controller.set_toggle( unit )
+
+	context['controller'] = r['controller']
+	context['enabled'] = enabled
+	return templates.TemplateResponse('servos.html',context)
+
 
 @api.get( '/turnout') 
 def turnout(request: Request):
@@ -210,6 +241,21 @@ def turnout(request: Request):
 	}
 
 	return templates.TemplateResponse('turnout.html',context)
+
+@api.get( '/user/{usr_email}') 
+async def user(usr_email):
+	global users
+
+	rv = []
+	for usr in users.list( email = usr_email ):
+		if 'password' in usr.keys():
+			usr['password'] = '****'
+
+		rv.append( usr )
+
+	return rv
+	## return templates.TemplateResponse('user.html', context)
+
 
 @api.get( '/siding') 
 def siding(request: Request):

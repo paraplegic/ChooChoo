@@ -30,6 +30,7 @@ class PCA_9685():
 			}
 			self.servo_state.append( new )
 			self.set_neutral( servo )
+		self.set_all( 0 )
 
 	## clear the state value of servo N ...
 	def clr_state( self, n ):
